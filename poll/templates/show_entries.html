@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <style>
+        .button {
+            display: inline-block;
+            cursor: pointer;
+            outline: none;
+            text-align: center;
+            text-decoration: none;
+            font: 16px/100% 'Microsoft yahei', Arial, Helvetica, sans-serif;
+            padding: .5em 2em .55em;
+            -webkit-border-radius: .5em;
+            -moz-border-radius: .5em;
+            border-radius: .5em;
+            color: #606060;
+            border: solid 1px #b7b7b7;
+            background: #ededed;
+        }
+
+        .button:hover {
+            text-decoration: none;
+            background: #fff;
+        }
+
+        .button:active {
+            position: relative;
+            top: 1px;
+            color: #999;
+        }
+
+    </style>
+
+
+    <div style="float: right;"><span>{{ current_user.username }}</span>&nbsp;<a style="color: crimson" href="/logout">注销</a></div>
+
+    <form action="{{ url_for('labelling') }}" method="post" class="add-entry" name="item">
+
+        {{ form.file_id(value=entry.id) }}
+        <dl>
+            <dt>Audio:
+            <dd>
+                <audio controls autoplay id="audio">
+                    <source src="{{url_for('static', filename=entry.file_uri )}}" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            <br>
+            <dt>Prediction:
+            <dd><input id="prediction" type="text" size="80" name="prediction" value="{{ entry.prediction }}" >
+            </dd>
+            <br>
+            <dt>{{ form.label.label }}:
+            <dd>
+            {{ form.label(autofocus=true, size="80") }}
+            <br><br>
+
+            <dd><button class="button" name="submit" onclick="return submit_veritify()">提交(enter)</button>
+            <button id="but" class="button" type="button" onClick="return copy();" >填充(ctrl+shift)</button>
+            <br><br>
+            
+
+        </dl>
+    </form>
+
+    <div><a href="{{ url_for('show_history') }}">返回列表</a></div>
+    <script>
+        function copy() {
+            if(document.getElementById("label").value === '') {
+               document.getElementById("label").value += document.getElementById("prediction").value;
+            }else {
+            document.getElementById("label").value += ' '+document.getElementById("prediction").value;
+             }
+        }
+        document.onkeydown = function (e) {
+            if ((e || event).keyCode === 16 && e.ctrlKey){
+                copy();
+            }
+        }
+
+        var pre = document.getElementById('prediction').value;
+
+        {% if entry.flag == 0 %}
+
+        if ( pre=== "*" || pre==="" ) {
+            document.item.submit.value = "提交";
+        }else {
+            var secs = 8;
+            document.item.submit.disabled = true;
+            for (var i = 1; i <= secs; i++) {
+                window.setTimeout("update(" + i + ")", i * 1000);
+            }
+            function update(num) {
+                if (num === secs) {
+                    document.item.submit.value = "提交";
+                    document.item.submit.disabled = false;
+                }
+                else {
+                    var printnr = secs - num;
+                    document.item.submit.value = "请认真标柱 (" + printnr + ")";
+                }
+            }
+        }
+
+        {% else %}
+            document.item.submit.value = "提交";
+        {% endif %}
+
+    // Audio Loop Limit
+    var loopLimit = 3;
+    var loopCounter = 0;
+    document.getElementById('audio').addEventListener('ended', function(){
+        if (loopCounter < loopLimit){
+            this.currentTime = 0;
+            this.play();
+            loopCounter++;
+        }
+    }, false);
+    
+    function catNum(num) {
+        var form = document.getElementsByTagName('item')[0];
+        document.getElementById("label").value =
+            document.getElementById("prediction").value + "*" + num;
+        form.submit();
+
+    }
+    function delWord() {
+        var form = document.getElementsByTagName('item')[0];
+        document.getElementById("label").value = "-";
+        form.submit();
+    }
+
+    function submit_veritify() {
+
+        if (document.getElementById("label").value !== "") {
+            var form = document.getElementsByTagName('item')[0];
+            form.submit();
+            return false;
+        }else {
+            window.alert("please input label before submit")
+            return false;
+        }
+
+    }
+
+    </script>
+{% endblock %}

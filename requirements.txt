@@ -1,0 +1,8 @@
+Flask==0.12.2
+Flask-Login==0.4.0
+Flask-SQLAlchemy==2.2
+Jinja2==2.9.6
+PyMySQL==0.7.11
+SQLAlchemy==1.1.11
+flask_wtf
+flask_migrate

@@ -1,0 +1,10 @@
+*.pyc
+.DS_Store
+poll/db_repository/
+__pycache__
+.idea/
+*.xlsx
+images/
+test/
+*.log
+poll/migrations/

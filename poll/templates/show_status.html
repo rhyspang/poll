@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+    <script src="/static/js/echarts.min.js"></script>
+    <script src="/static/js/jquery-3.1.1.min.js"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" type="text/css"/>
+
+    <div class="container-fluid">
+        <div id="main" style="width: 100%;height:400px;"></div>
+    </div>
+
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        // 指定图表的配置项和数据
+        option = {
+            title: {
+                text: "标柱数量统计",
+                subtext: ""
+            },
+            tooltip: {
+                trigger: "axis"
+            },
+            legend: {
+                data: ["本周已标柱"]
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: {
+                        show: true
+                    },
+                    dataView: {
+                        show: true,
+                        readOnly: true
+                    },
+                    magicType: {
+                        show: false,
+                        type: ["line", "bar"]
+                    },
+                    restore: {
+                        show: true
+                    },
+                    saveAsImage: {
+                        show: true
+                    }
+                }
+            },
+            calculable: true,
+            xAxis: [
+                {
+                    type: "value",
+                    boundaryGap: [0, 0.01]
+                }
+            ],
+            yAxis: [
+                {
+                    type: "category",
+                    data: []
+                }
+            ],
+            series: [
+                {
+                    name: "",
+                    type: "bar",
+                    data: [],
+                    label: {
+                        normal:{
+                            show: true,
+                            position: 'right'
+                        }
+                    }
+
+                },
+            ],
+            grid: {
+                x: 84
+            }
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+        $.getJSON("http://localhost:5000/query", function (json) {
+            var name = [];
+            var this_week_labeled = [];
+
+            var data = json.data;
+            for (var i = data.length-1; i >= 0; i--) {
+                if (null === data[i].name) {
+                    continue;
+                }
+                name.push(data[i].name);
+
+                this_week_labeled.push(data[i].labeled_count_this_week);
+            }
+            myChart.setOption({
+                yAxis: {
+                    type: 'category',
+                    data: name
+                },
+                series: [{
+                    name: '本周已标柱',
+                    type: 'bar',
+                    data: this_week_labeled
+                }]
+            });
+        });
+    </script>
+
+{% endblock %}

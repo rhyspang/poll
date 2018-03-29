@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <div style="float: right;"><span>{{ current_user.username }}&nbsp;</span><a style="color: crimson" href="{{ url_for('logout') }}">注销</a></div>
+
+    <div><a href="/status">工作量查询</a></div>
+    
+    <ul class="entries">
+
+        {% for entry in entries %}
+            <a href="/?file_id={{ entry.id }}">
+            <table>
+            
+            {{ loop.index + (posts_page.page - 1)*10 }} <hr>
+            
+             
+                <tr>
+                    <td width="100" align="left">entry id: {{ entry.id }}</a></td>
+                    <td><a href="/?file_id={{ entry.id }}">
+                         <audio controls>
+                            <source src="{{ url_for('static', filename=entry.file_uri)}}" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>{{ entry.user.username }} :</td>
+                    <td>{{ entry.label }}</td>
+                    <td>{{ entry.time_updated }}</td>
+                </tr>
+              
+            </table>
+            </a>
+        {% endfor %}
+
+    </ul>
+    
+
+    <ul class="pagenum">
+        <li>
+            {% if posts_page.has_prev %}
+                <a href="{{ url_for('show_history', page = posts_page.prev_num, user=user) }}">上一页</a>
+            {% else %}
+                上一页
+            {% endif %}</li>
+
+        {% for page in posts_page.iter_pages() %}
+            <li>
+                {% if page %}
+                    {% if page != posts_page.page %}
+                        <a href="{{ url_for('show_history', page=page, user=user) }}">{{ page }}</a>
+                    {% else %}
+                        <span class="page-number current">{{ page }}</span>
+                    {% endif %}
+                {% else %}
+                    <span class='ellipsis'>…</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+        <li>
+            {% if posts_page.has_next %}
+                <a href="{{ url_for('show_history', page = posts_page.next_num, user=user) }}">下一页 </a>
+            {% else %}
+                下一页
+            {% endif %}
+        </li>
+    </ul>
+{% endblock %}
