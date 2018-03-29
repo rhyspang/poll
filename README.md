@@ -1,6 +1,6 @@
 ## install project
 ```
-cd annotator_audio
+cd poll
 source ./install.sh
 ```
 
@@ -18,8 +18,6 @@ using mysql for storage
 
 ## run
 ```
-flask run -h 0.0.0.0 -p 2256 --no-debugger --without-threads
+flask run -h 0.0.0.0 -p 2256 
 ```
 
-# file2db
-run `python file_info2db.py` to add audio info to db
